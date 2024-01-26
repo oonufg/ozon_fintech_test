@@ -1,0 +1,14 @@
+syntax = "proto3";
+package proto;
+
+service ShortURL{
+    rpc CreateCompressedUrl(CreateCompressedUrlRequest) returns (CreateCompressedUrlResponse)
+}
+
+message CreateCompressedUrlRequest{
+    
+}
+
+message CreateCompressedUrlResponse{
+    string compressed_url = 1;
+}

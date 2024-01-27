@@ -1,0 +1,136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ShortURL"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/urls": {
+      "post": {
+        "operationId": "ShortURL_CreateCompressedUrl",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoCreateCompressedUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoCreateCompressedUrlRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ShortURL"
+        ]
+      }
+    },
+    "/api/v1/urls/{compressedUrl}": {
+      "get": {
+        "operationId": "ShortURL_GetFullUrlByCompressed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoGetFullUrlByCompressedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "compressedUrl",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ShortURL"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protoCreateCompressedUrlRequest": {
+      "type": "object",
+      "properties": {
+        "fullUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "protoCreateCompressedUrlResponse": {
+      "type": "object",
+      "properties": {
+        "compressedUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "protoGetFullUrlByCompressedResponse": {
+      "type": "object",
+      "properties": {
+        "fullUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

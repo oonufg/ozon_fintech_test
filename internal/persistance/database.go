@@ -1,7 +1,9 @@
 package persistence
 
 import (
-	"database/sql"
+	"context"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -13,24 +15,24 @@ const (
 		`
 )
 
-func SaveURLInSQLDB(database *sql.DB, compressedURL string, fullUrl string) error {
-	transaction, error := database.Begin()
+func SaveURLInSQLDB(ctx context.Context, database *pgxpool.Pool, compressedURL string, fullUrl string) error {
+	transaction, error := database.Begin(ctx)
 	if error != nil {
 		return error
 	}
 
 	defer func() {
 		if panicValue := recover(); panicValue != nil {
-			transaction.Rollback()
+			transaction.Rollback(ctx)
 		}
 	}()
 
-	_, error = transaction.Exec(SAVE_URL, compressedURL, fullUrl)
+	_, error = transaction.Exec(ctx, SAVE_URL, compressedURL, fullUrl)
 	if error != nil {
-		transaction.Rollback()
+		transaction.Rollback(ctx)
 	}
 
-	error = transaction.Commit()
+	error = transaction.Commit(ctx)
 	if error != nil {
 		return error
 	}
@@ -38,14 +40,14 @@ func SaveURLInSQLDB(database *sql.DB, compressedURL string, fullUrl string) erro
 	return nil
 }
 
-func GetFullUrlByCompressedFromSQL(database *sql.DB, compressedURL string) (string, error) {
-	transaction, error := database.Begin()
+func GetFullUrlByCompressedFromSQL(ctx context.Context, database *pgxpool.Pool, compressedURL string) (string, error) {
+	transaction, error := database.Begin(ctx)
 	if error != nil {
 		return "", error
 	}
 	var fullUrl string
 
-	error = transaction.QueryRow(GET_FULL_URL_BY_COMPRESSED, compressedURL).Scan(&fullUrl)
+	error = transaction.QueryRow(ctx, GET_FULL_URL_BY_COMPRESSED, compressedURL).Scan(&fullUrl)
 	if error != nil {
 		return "", error
 	}

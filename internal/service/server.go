@@ -13,3 +13,7 @@ func MakeServer(repository persistence.UrlRepository) *Server {
 		repository: repository,
 	}
 }
+
+func RunRestGateway() {
+
+}

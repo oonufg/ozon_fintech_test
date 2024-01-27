@@ -1,0 +1,38 @@
+syntax = "proto3";
+package proto;
+
+import "google/api/annotations.proto";
+
+option go_package = "./;proto";
+
+service ShortURL{
+    rpc CreateCompressedUrl(CreateCompressedUrlRequest) returns (CreateCompressedUrlResponse){
+        option (google.api.http) = {
+            post: "/api/v1/urls"
+            body: "*"
+        };
+    }
+
+    rpc GetFullUrlByCompressed(GetFullUrlByCompressedRequest) returns (GetFullUrlByCompressedResponse){
+        option (google.api.http) = {
+            get: "/api/v1/urls/{compressed_url}"
+        };
+    }
+
+}
+
+message CreateCompressedUrlRequest{
+    string full_url = 1;
+}
+
+message CreateCompressedUrlResponse{
+    string compressed_url = 1;
+}
+
+message GetFullUrlByCompressedRequest{
+    string compressed_url = 1;
+}
+
+message GetFullUrlByCompressedResponse{
+    string full_url = 1;
+}

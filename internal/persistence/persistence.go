@@ -42,7 +42,7 @@ func (imr *InmemoryUrlRepository) GetFullUrlByCompressed(ctx context.Context, ur
 	return value, nil
 }
 
-func (imr *InmemoryUrlRepository) SaveCompressedUrl(ctx context.Context, fullUrl string, compressedUrl string) error {
+func (imr *InmemoryUrlRepository) SaveCompressedUrl(ctx context.Context, compressedUrl string, fullUrl string) error {
 	imr.table[compressedUrl] = fullUrl
 	return nil
 }

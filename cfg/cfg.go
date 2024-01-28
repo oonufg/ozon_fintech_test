@@ -37,7 +37,7 @@ func LoadCFG() *Cfg {
 		GRPC_ADDR:          pullEnvVariable("GRPC_ADDR"),
 		HTTP_GATEWAY_ADDRE: pullEnvVariable("HTTP_GATEWAY_ADDRE"),
 		HTTP_GATEWAY_PORT:  pullEnvVariable("HTTP_GATEWAY_PORT"),
-		PERSISTANCE_MODE:   os.Args[0],
+		PERSISTANCE_MODE:   pullPersistanceType(),
 	}
 }
 
@@ -47,4 +47,12 @@ func pullEnvVariable(key string) string {
 		log.Fatalf("Environment variable %s not found in env", key)
 	}
 	return value
+}
+
+func pullPersistanceType() string {
+	if len(os.Args) < 2 {
+		return ""
+	} else {
+		return os.Args[1]
+	}
 }

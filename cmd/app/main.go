@@ -10,7 +10,7 @@ import (
 func main() {
 	cfg := cfg.LoadCFG()
 	//ctx := context.Background()
-	controller := controllers.MakeShortUrlController(persistence.MakeInmemoryRepository())
+	controller := controllers.MakeShortUrlController(persistence.RepositoryFactoryMethod(cfg))
 	server := server.MakeServer(
 		controller,
 		cfg.HTTP_GATEWAY_ADDRE,

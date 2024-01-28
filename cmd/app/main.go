@@ -1,25 +1,22 @@
 package main
 
 import (
-	"net"
+	"ozon_fintech_test/cfg"
 	"ozon_fintech_test/internal/persistence"
 	server "ozon_fintech_test/internal/service"
-	pb "ozon_fintech_test/internal/service/proto/generated"
-
-	"google.golang.org/grpc"
+	controllers "ozon_fintech_test/internal/service/controllers"
 )
 
 func main() {
-	gRPCServer := grpc.NewServer()
-	go func() {
-		listener, _ := net.Listen("tcp", "0.0.0.0:8083")
-		gRPCServer.Serve(listener)
-	}()
-
-	server := server.MakeServer(persistence.MakeInmemoryRepository())
-	pb.RegisterShortURLServer(gRPCServer, server)
-	server.RunRestGateway(":8080", "0.0.0.0:8083")
-
+	cfg := cfg.LoadCFG()
+	//ctx := context.Background()
+	controller := controllers.MakeShortUrlController(persistence.MakeInmemoryRepository())
+	server := server.MakeServer(
+		controller,
+		cfg.HTTP_GATEWAY_ADDRE,
+		cfg.HTTP_GATEWAY_PORT,
+		cfg.GRPC_ADDR,
+		cfg.GRPC_PORT,
+	)
+	server.Run()
 }
-
-//Graceful shutdown сделаю потом

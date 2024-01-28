@@ -19,4 +19,10 @@ func main() {
 		cfg.GRPC_PORT,
 	)
 	server.Run()
+
+	defer server.Shutdown() // handleosSignals потом закроет, пока так
+}
+
+func handleOsSignals() {
+	//todo
 }

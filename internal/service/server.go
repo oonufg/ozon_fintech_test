@@ -15,11 +15,12 @@ import (
 )
 
 type Server struct {
-	gatewayAdder string
-	gatewatPort  string
-	gRPCAddre    string
-	gRPCPort     string
-
+	gatewayAdder       string
+	gatewatPort        string
+	gRPCAddre          string
+	gRPCPort           string
+	httpGateway        *http.Server
+	gRPCServer         *grpc.Server
 	shortUrlController *server.ShortUrlController
 }
 
@@ -63,7 +64,11 @@ func (server *Server) runGRPCServer(ctx context.Context, gRPCServer *grpc.Server
 func (server *Server) runGatewayServer(ctx context.Context, filledMux *runtime.ServeMux) {
 	log.Println("Starting HTTP Gateway..")
 	mux := server.getFillGRPCMux(ctx)
-	error := http.ListenAndServe(fmt.Sprintf("%s:%s", server.gatewayAdder, server.gatewatPort), mux)
+	server.httpGateway = &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", server.gatewayAdder, server.gatewatPort),
+		Handler: mux,
+	}
+	error := server.httpGateway.ListenAndServe()
 	if error != nil {
 		log.Fatalf("Failed to start HTTP Gateway at %s:%s", server.gatewayAdder, server.gatewatPort)
 	}
@@ -82,9 +87,16 @@ func (server *Server) getFillGRPCMux(ctx context.Context) *runtime.ServeMux {
 
 func (server *Server) Run() {
 	log.Println("Starting Server...")
-	gRPCServer := grpc.NewServer()
+	server.gRPCServer = grpc.NewServer()
 	mux := server.getFillGRPCMux(context.TODO())
-	pb.RegisterShortURLServer(gRPCServer, server.shortUrlController)
-	go server.runGRPCServer(context.TODO(), gRPCServer)
+	pb.RegisterShortURLServer(server.gRPCServer, server.shortUrlController)
+	go server.runGRPCServer(context.TODO(), server.gRPCServer)
 	server.runGatewayServer(context.TODO(), mux)
+}
+
+func (server *Server) Shutdown() {
+	log.Println("Shooting down http gateway...")
+	server.httpGateway.Shutdown(context.TODO())
+	log.Println("Shooting down gRPC server...")
+	server.gRPCServer.GracefulStop()
 }

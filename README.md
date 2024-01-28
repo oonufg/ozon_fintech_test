@@ -1,1 +1,1 @@
-#Ozon Fintech: тестовое задание
+# Ozon Fintech: тестовое задание

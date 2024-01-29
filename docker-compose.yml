@@ -21,3 +21,4 @@ services:
    POSTGRES_PASSWORD: ${PG_PASSWORD}
   ports:
   - ${PG_PORT}:5432
+  

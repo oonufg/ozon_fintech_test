@@ -85,13 +85,22 @@ func (server *Server) getFillGRPCMux(ctx context.Context) *runtime.ServeMux {
 	return mux
 }
 
-func (server *Server) Run() {
+func (server *Server) Run(ctx context.Context) {
 	log.Println("Starting Server...")
 	server.gRPCServer = grpc.NewServer()
 	mux := server.getFillGRPCMux(context.TODO())
 	pb.RegisterShortURLServer(server.gRPCServer, server.shortUrlController)
-	go server.runGRPCServer(context.TODO(), server.gRPCServer)
-	server.runGatewayServer(context.TODO(), mux)
+
+	go server.runGRPCServer(ctx, server.gRPCServer)
+	go server.runGatewayServer(ctx, mux)
+
+	for {
+		select {
+		case <-ctx.Done():
+			server.Shutdown()
+			return
+		}
+	}
 }
 
 func (server *Server) Shutdown() {

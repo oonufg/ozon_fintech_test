@@ -42,5 +42,6 @@ func RunServerWorker(ctx context.Context, cfg *cfg.Cfg) {
 		cfg.GRPC_ADDR,
 		cfg.GRPC_PORT,
 	)
+
 	server.Run(ctx)
 }

@@ -9,6 +9,7 @@
     1. docker-compose down
 ---
 #### API:
+##### В основе API лежит gRPC с HTTP Gateway
     Существует Swagger файл:
     Лежит: docs/api
 ### HTTP Методы
